@@ -57,6 +57,7 @@ class ScrollablePositionedList extends StatefulWidget {
     this.addAutomaticKeepAlives = true,
     this.addRepaintBoundaries = true,
     this.minCacheExtent,
+    this.scrollController,
   })  : assert(itemCount != null),
         assert(itemBuilder != null),
         itemPositionsNotifier = itemPositionsListener as ItemPositionsNotifier?,
@@ -87,6 +88,7 @@ class ScrollablePositionedList extends StatefulWidget {
     this.addAutomaticKeepAlives = true,
     this.addRepaintBoundaries = true,
     this.minCacheExtent,
+    this.scrollController,
   })  : assert(itemCount != null),
         assert(itemBuilder != null),
         assert(separatorBuilder != null),
@@ -185,6 +187,9 @@ class ScrollablePositionedList extends StatefulWidget {
   /// in builds of widgets that would otherwise already be built in the
   /// cache extent.
   final double? minCacheExtent;
+
+  //TODO add description
+  final ScrollController? scrollController;
 
   @override
   State<StatefulWidget> createState() => _ScrollablePositionedListState();
@@ -328,6 +333,12 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
   void initState() {
     super.initState();
     ItemPosition? initialPosition = PageStorage.of(context).readState(context);
+
+    primary = _ListDisplayDetails(
+      const ValueKey('Ping'),
+      scrollController: widget.scrollController,
+    );
+
     primary.target = initialPosition?.index ?? widget.initialScrollIndex;
     primary.alignment =
         initialPosition?.itemLeadingEdge ?? widget.initialAlignment;
@@ -655,10 +666,14 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
 }
 
 class _ListDisplayDetails {
-  _ListDisplayDetails(this.key);
+  _ListDisplayDetails(
+    this.key, {
+    ScrollController? scrollController,
+  }) : this.scrollController =
+            scrollController ?? ScrollController(keepScrollOffset: false);
 
   final itemPositionsNotifier = ItemPositionsNotifier();
-  final scrollController = ScrollController(keepScrollOffset: false);
+  //final scrollController = ScrollController(keepScrollOffset: false);
 
   /// The index of the item to scroll to.
   int target = 0;
@@ -669,4 +684,5 @@ class _ListDisplayDetails {
   double alignment = 0;
 
   final Key key;
+  final ScrollController scrollController;
 }
